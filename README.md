@@ -145,6 +145,16 @@ python preflight.py
 disk, model access, dataset schema, and exact Hub revisions. It writes
 `preflight_report.json`.
 
+If the VM environment was created before the latest dependency update, repair
+it without recreating the VM:
+
+```bash
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip check
+hf --help
+```
+
 ## 5. Smoke test
 
 **VM**
