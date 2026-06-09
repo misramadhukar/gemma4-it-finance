@@ -16,7 +16,6 @@ from sft_utils import build_prompt
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base-model", default="google/gemma-4-E2B-it")
     parser.add_argument(
         "--adapter",
         default="outputs/gemma4-e2b-finance-qlora/final_adapter",

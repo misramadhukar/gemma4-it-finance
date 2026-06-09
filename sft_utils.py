@@ -69,6 +69,7 @@ def rendered_length(
     token_ids = tokenizer.apply_chat_template(
         prompt + completion,
         tokenize=True,
+        return_dict=False,
         add_generation_prompt=False,
         enable_thinking=False,
     )

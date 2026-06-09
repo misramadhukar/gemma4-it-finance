@@ -28,10 +28,13 @@ class CharacterTokenizer:
         self,
         messages: list[dict[str, str]],
         tokenize: bool,
+        return_dict: bool,
         add_generation_prompt: bool,
         enable_thinking: bool,
     ) -> list[int]:
         del tokenize, enable_thinking
+        if return_dict:
+            raise AssertionError("rendered_length must request token IDs, not a dict.")
         rendered = "".join(
             f"<{message['role']}>{message['content']}</{message['role']}>"
             for message in messages
@@ -67,6 +70,7 @@ class SftUtilsTests(unittest.TestCase):
             tokenizer.apply_chat_template(
                 build_prompt(fitted) + completion,
                 tokenize=True,
+                return_dict=False,
                 add_generation_prompt=False,
                 enable_thinking=False,
             )
@@ -82,6 +86,7 @@ class SftUtilsTests(unittest.TestCase):
                 tokenizer.apply_chat_template(
                     [{"role": "user", "content": "short"}] + completion,
                     tokenize=True,
+                    return_dict=False,
                     add_generation_prompt=False,
                     enable_thinking=False,
                 )

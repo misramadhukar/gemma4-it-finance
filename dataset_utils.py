@@ -95,6 +95,7 @@ def format_dataset(
         return {
             "prompt": build_prompt(article),
             "completion": completion,
+            "chat_template_kwargs": {"enable_thinking": False},
             "sequence_length": sequence_length,
             "was_truncated": was_truncated,
         }
