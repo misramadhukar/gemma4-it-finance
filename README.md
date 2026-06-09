@@ -90,7 +90,7 @@ Set:
 
 ```bash
 PROJECT_ID=your-gcp-project-id
-ZONE=us-central1-a
+ZONE=asia-south1-a
 VM_NAME=gemma4-finance-ft
 PROVISIONING_MODEL=STANDARD
 ```
