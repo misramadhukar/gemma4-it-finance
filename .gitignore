@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+.cache/
+outputs/
+*.log
+gcp/config.env
+gcp/train.env
+gcp/downloads/
+environment-lock.txt
+preflight_report.json
