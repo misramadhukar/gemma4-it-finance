@@ -24,13 +24,39 @@ if [[ "${OUTPUT_DIR}" == /* || "${OUTPUT_DIR}" == *".."* || ! "${OUTPUT_DIR}" =~
   exit 1
 fi
 
-for boolean_name in OVERWRITE_OUTPUT_DIR PUSH_TO_HUB SKIP_READINESS_CHECKS; do
+AUTO_SHUTDOWN="${AUTO_SHUTDOWN:-false}"
+SHUTDOWN_ON_FAILURE="${SHUTDOWN_ON_FAILURE:-true}"
+
+for boolean_name in \
+  OVERWRITE_OUTPUT_DIR \
+  PUSH_TO_HUB \
+  SKIP_READINESS_CHECKS \
+  AUTO_SHUTDOWN \
+  SHUTDOWN_ON_FAILURE; do
   boolean_value="${!boolean_name:-false}"
   if [[ "${boolean_value}" != "true" && "${boolean_value}" != "false" ]]; then
     echo "${boolean_name} must be true or false." >&2
     exit 1
   fi
 done
+
+NOTIFICATION_KIND="${NOTIFICATION_KIND:-ntfy}"
+if [[ ! "${NOTIFICATION_KIND}" =~ ^(ntfy|slack|discord|generic)$ ]]; then
+  echo "NOTIFICATION_KIND must be ntfy, slack, discord, or generic." >&2
+  exit 1
+fi
+
+if [[ -n "${NOTIFICATION_URL:-}" && ! "${NOTIFICATION_URL}" =~ ^https:// ]]; then
+  echo "NOTIFICATION_URL must use HTTPS." >&2
+  exit 1
+fi
+
+AUTO_SHUTDOWN_DELAY_MINUTES="${AUTO_SHUTDOWN_DELAY_MINUTES:-1}"
+if [[ ! "${AUTO_SHUTDOWN_DELAY_MINUTES}" =~ ^[1-9][0-9]*$ ]] ||
+  (( AUTO_SHUTDOWN_DELAY_MINUTES > 60 )); then
+  echo "AUTO_SHUTDOWN_DELAY_MINUTES must be an integer from 1 to 60." >&2
+  exit 1
+fi
 
 TMUX_SESSION="${TMUX_SESSION:-gemma4}"
 if [[ ! "${TMUX_SESSION}" =~ ^[A-Za-z0-9_.-]+$ ]]; then

@@ -27,7 +27,8 @@ The supported path is Ubuntu 22.04 on a GCP `g2-standard-8` VM:
 
 ## Before starting
 
-1. Enable billing for the GCP project.
+1. Upgrade to a paid billing account and link it to the GCP project. Free Trial
+   billing accounts cannot create GPU VMs.
 2. Obtain G2/L4 GPU quota.
 3. Accept access to the gated Gemma model on Hugging Face.
 4. Have a Hugging Face token ready.
@@ -231,6 +232,45 @@ The manifest records:
 - train/evaluation metrics
 - completion or failure status
 
+### Completion notification and automatic shutdown
+
+The training wrapper can notify you and power off the VM after either successful
+completion or failure. Stopping the VM ends GPU and vCPU charges, while the boot
+disk, checkpoints, logs, and outputs remain available and continue to incur
+storage charges.
+
+The simplest notification option is a private `ntfy` topic:
+
+1. Install the ntfy app or open [ntfy.sh](https://ntfy.sh/).
+2. Generate a hard-to-guess topic name on the VM:
+
+```bash
+openssl rand -hex 24
+```
+
+3. Subscribe to that topic, then set these values in `gcp/train.env`:
+
+```bash
+AUTO_SHUTDOWN=true
+SHUTDOWN_ON_FAILURE=true
+AUTO_SHUTDOWN_DELAY_MINUTES=1
+NOTIFICATION_KIND=ntfy
+NOTIFICATION_URL=https://ntfy.sh/YOUR_RANDOM_TOPIC
+```
+
+`gcp/train.env` is ignored by Git and excluded from project uploads. Slack,
+Discord, and generic JSON webhooks are also supported through
+`NOTIFICATION_KIND`.
+
+When training exits, `outputs/training_job_status.json` records its status and
+exit code. The notification is sent before shutdown. To keep the VM running for
+debugging, set `AUTO_SHUTDOWN=false`. To cancel a scheduled shutdown during its
+delay, run:
+
+```bash
+sudo shutdown -c
+```
+
 ## 8. Resume
 
 Set this in `gcp/train.env`:
@@ -253,6 +293,8 @@ bash gcp/start_vm.sh
 bash gcp/wait_ready.sh
 bash gcp/connect.sh
 ```
+
+The same commands start a VM that was automatically stopped after training.
 
 ## 9. Evaluate the adapter
 

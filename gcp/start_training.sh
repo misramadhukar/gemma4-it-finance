@@ -36,7 +36,7 @@ fi
 
 printf -v command 'cd %q && exec bash %q >> %q 2>&1' \
   "${REPO_ROOT}" \
-  "${SCRIPT_DIR}/run_training.sh" \
+  "${SCRIPT_DIR}/training_job.sh" \
   "${log_file}"
 
 tmux new-session -d -s "${session}" "${command}"
@@ -44,3 +44,6 @@ tmux new-session -d -s "${session}" "${command}"
 echo "Training started in tmux session ${session}."
 echo "Log: ${log_file}"
 echo "Attach: tmux attach -t ${session}"
+if [[ "${AUTO_SHUTDOWN:-false}" == "true" ]]; then
+  echo "Automatic shutdown is enabled after training finishes."
+fi

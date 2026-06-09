@@ -20,5 +20,6 @@ python3 -m py_compile \
   hub_utils.py \
   sft_utils.py
 python3 -m unittest discover -s tests -v
+bash tests/test_training_job.sh
 
 echo "Project validation passed."
